@@ -1,0 +1,32 @@
+package worker
+
+import (
+	"encoding/json"
+	"io/ioutil"
+	"log"
+)
+
+var G_config *Config
+
+type Config struct {
+	EtcdEndpoints       []string `json:"etcdEndpoints"`
+	EtcdDialTimeout     int      `json:"etcdDialTimeout"`
+	MongodbUri          string   `json:"mongodbUri"`
+	JobLogBatchSize     int      `json:"jobLogBatchSize"`
+	JobLogCommitTimeout int      `json:"jobLogCommitTimeout"`
+}
+
+func IntiConfig(filename string) error {
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+	conf := Config{}
+	err = json.Unmarshal(content, &conf)
+	if err != nil {
+		return err
+	}
+	G_config = &conf
+	log.Println("配置初始化成功。。。")
+	return nil
+}
